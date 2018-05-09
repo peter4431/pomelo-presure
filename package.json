@@ -7,11 +7,15 @@
     "co": "^4.6.0",
     "commander": "^2.15.1",
     "fernet": "^0.3.1",
+    "pomelo-presure-client": "git+https://github.com/peter4431/pomelo-presure-client.git",
     "pomelo-robot-update": "git+https://github.com/peter4431/pomelo-robot-update.git"
   },
   "devDependencies": {},
   "scripts": {
     "test": "npm test"
+  },
+  "bin": {
+    "presure": "./bin/presure"
   },
   "keywords": [
     "presure"

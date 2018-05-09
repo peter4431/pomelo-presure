@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 /**
  * 压测脚本执行和结果统计工具
 
@@ -21,6 +23,7 @@ program.allowUnknownOption()
 
 program
   .version(appInfo.version)
+  .usage('presure [master|client|run] [options]')
   .option('-p, --port [value]', '压测服务器和客户端连接端口', parseInt)
   .option('-w, --webport [value]', 'master 网页端口', parseInt)
   .option('-i, --interval [value]', '数据刷新间隔', parseInt)
@@ -64,7 +67,8 @@ let config = {
 let robot = new Robot(config)
 
 if (!mode) {
-  throw new Error('must have command [master, client, run]')
+  console.log('master use command [master|client|run]')
+  process.exit(1)
 }
 
 if (mode === 'master') {
