@@ -409,7 +409,8 @@ const clientFunc = (function () {
   }
 
   let onKick = function (data) {
-    pomelo.emit(Events.ONKICK)
+    let msg = decode ? decode(data) : data
+    pomelo.emit(Events.ONKICK, msg.body)
   }
 
   handlers[Package.TYPE_HANDSHAKE] = handshake
@@ -529,8 +530,8 @@ class PresureClient {
       let route = msg.route
       let body = msg.body
 
-      console.log(`onPushMessage: ${route} data: ${JSON.stringify(body)}`)
-    })
+      console.log(`id:${this.getOffset()} onPushMessage: ${route} data: ${JSON.stringify(body)}`)
+    }.bind(this))
 
     console.log(`new PresureClient actor:${JSON.stringify(actor)}`)
     this.offset = this.getOffset()
@@ -554,9 +555,9 @@ class PresureClient {
   request (route, data) {
     let client = this.client
     return new Promise(function (resolve, reject) {
-      console.log(route + ' req:' + JSON.stringify(data))
+      console.log('id:' + this.offset + ' ' + route + ' req:' + JSON.stringify(data))
       let reqId = client.request(route, data, function (res, reqId) {
-        console.log(route + ' res:' + JSON.stringify(res))
+        console.log('id:' + this.offset + ' ' + route + ' res:' + JSON.stringify(res))
         this.monitor(END, route, reqId)
         resolve(res)
       }.bind(this))
