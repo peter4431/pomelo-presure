@@ -1,0 +1,21 @@
+{
+  "name": "pomelo-presure",
+  "version": "0.0.1",
+  "description": "压测工具",
+  "main": "presure.js",
+  "dependencies": {
+    "co": "^4.6.0",
+    "commander": "^2.15.1",
+    "fernet": "^0.3.1",
+    "pomelo-robot-update": "git+https://github.com/peter4431/pomelo-robot-update.git"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "npm test"
+  },
+  "keywords": [
+    "presure"
+  ],
+  "author": "peter4431",
+  "license": "ISC"
+}

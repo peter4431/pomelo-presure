@@ -1,0 +1,83 @@
+/**
+ * 压测脚本执行和结果统计工具
+
+ * 使用方式,
+ * 设执行 master 的机器 ip 为 {masterip}
+
+ * master: presure master -p 8880 -w 8881 -i 500
+ * client: presure client -h {masterip} -p 8888 -i 500
+ * client: presure run -f {file} -n {times}
+
+ * 然后访问 {masterip}:8881 即可看到操作面板，操作即可
+ */
+
+const program = require('commander')
+const appInfo = require('../package.json')
+const Robot = require('pomelo-robot-update').Robot
+const Runner = require('../lib/runner')
+
+let mode = null
+program.allowUnknownOption()
+
+program
+  .version(appInfo.version)
+  .option('-p, --port [value]', '压测服务器和客户端连接端口', parseInt)
+  .option('-w, --webport [value]', 'master 网页端口', parseInt)
+  .option('-i, --interval [value]', '数据刷新间隔', parseInt)
+  .option('-h, --host [value]', 'master 地址')
+  .option('-f, --file [value]', '脚本地址')
+  .option('-n, --num [value]', '运行个数')
+
+program
+  .command('master')
+  .allowUnknownOption()
+  .description('启动 master')
+  .action(function (){
+    mode = 'master'
+    console.log('启动 master')
+  })
+
+program
+  .command('client')
+  .allowUnknownOption()
+  .description('启动 client')
+  .action(function (){
+    mode = 'client'
+    console.log('启动 client')
+  })
+
+program
+  .command('run')
+  .allowUnknownOption()
+  .description('直接运行脚本')
+  .action(function (){
+    mode = 'run'
+    console.log('直接运行脚本')
+  })
+
+program.parse(process.argv)
+
+let config = {
+  master: {host: program.host, port: program.port, webport: program.webport, interval: program.interval}
+}
+
+let robot = new Robot(config)
+
+if (!mode) {
+  throw new Error('must have command [master, client, run]')
+}
+
+if (mode === 'master') {
+  robot.runMaster()
+} else if (mode === 'client') {
+  robot.runAgent()
+} else if (mode === 'run') {
+  (new Runner()).run(program.file, program.num)
+}
+
+process.on('uncaughtException', function (err) {
+  console.error('caught exception: ' + err.stack)
+  if (!!robot && !!robot.agent) {
+    robot.agent.socket.emit('crash', err.stack)
+  }
+})
